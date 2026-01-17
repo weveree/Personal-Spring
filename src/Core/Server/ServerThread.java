@@ -51,8 +51,8 @@ public class ServerThread implements Runnable {
     private void sendResponse(ResponseEntity response) throws IOException {
         OutputStream out = listener.getOutputStream();
         PrintWriter writer = new PrintWriter(out, true); // auto-flush
-        if(response == null)
-            response = new ResponseEntity(404, ResponseEntityFormat.TEXT,"not found");
+        if (response == null)
+            response = new ResponseEntity(404, ResponseEntityFormat.JSON, Map.of("error","Requested resource not found."));
         writer.print(response);
         writer.flush();
         writer.close();
@@ -71,14 +71,25 @@ public class ServerThread implements Runnable {
             request_builder.add(line);
             line = reader.readLine();
         }
-        Request request = Request.parse(request_builder);
+        String body = null;
+        int length = 0;
+        int index =0;
+        if (request_builder.stream().filter(obj->obj.contains("Content-Length")).findAny().isPresent())
+            if (request_builder.get(8).startsWith("Content-Length"))
+                length = Integer.parseInt(request_builder.get(8).substring(16));
+        if (length > 0) {
+            char[] bodyChars = new char[length];
+            reader.read(bodyChars, 0, length);
+            body = new String(bodyChars);
+        }
+        Request request = Request.parse(request_builder, body);
 
         try {
             SecurityManager.Instance.Execute(request);
         } catch (FilterException | CORSException e) {
-            return new ResponseEntity(403,ResponseEntityFormat.JSON, Map.of("error",e.getMessage()));
+            return new ResponseEntity(403, ResponseEntityFormat.JSON, Map.of("error", e.getMessage()));
         }
-        return ControllerManager.Instance.executeRoute(request.getPath());
+        return ControllerManager.Instance.executeRoute(request.getPath(), request.getMethod(),request);
     }
 
     private void cleanup() {

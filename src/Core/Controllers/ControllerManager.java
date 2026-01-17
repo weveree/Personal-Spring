@@ -9,10 +9,11 @@ import java.util.function.Function;
 
 import Core.Response.ResponseEntity;
 import Core.Routes.Route;
+import Core.Server.Request;
 
 public class ControllerManager {
     public static ControllerManager Instance = new ControllerManager();
-    Map<String, Function<Object, ResponseEntity>> routes;
+    Map<String, Map<String,Function<Request, ResponseEntity>>> routes;
 
     public ControllerManager() {
         routes = new HashMap<>();
@@ -41,15 +42,16 @@ public class ControllerManager {
                         throw new RuntimeException(e);
                     }
                 };
-                routes.put(path,fun);
+                routes.put(route.method(),Map.of(path,fun));
                 System.out.println("Path "+path+" added");
             }
         }
     }
 
-    public ResponseEntity executeRoute(String route) {
-        if(routes.get(route) == null) return null;
-        return routes.get(route).apply(null);
+    public ResponseEntity executeRoute(String route, String method, Request param) {
+        if(routes.get(method) == null) return null;
+        if(routes.get(method).get(route) == null) return null;
+        return routes.get(method).get(route).apply(param);
     }
 
 }

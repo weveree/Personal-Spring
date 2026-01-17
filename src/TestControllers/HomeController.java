@@ -6,6 +6,7 @@ import Core.Persistency.PostgresPersist;
 import Core.Response.ResponseEntity;
 import Core.Response.ResponseEntityFormat;
 import Core.Routes.Route;
+import Core.Server.Request;
 
 import java.util.Map;
 
@@ -19,6 +20,11 @@ public class HomeController{
 
     @Route("/")
     public ResponseEntity home(Object o) {
+        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",homeService.getAll()));
+    }
+    @Route(value = "/",method = "POST")
+    public ResponseEntity home_post(Request o) {
+        System.out.println(o.getBody());
         return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",homeService.getAll()));
     }
 
