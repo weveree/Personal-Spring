@@ -2,7 +2,7 @@ package TestControllers;
 
 import Core.Connector.Connector;
 import Core.Controllers.Controller;
-import Core.Persistency.AbstractPostgresPersist;
+import Core.Persistency.PostgresPersist;
 import Core.Response.ResponseEntity;
 import Core.Response.ResponseEntityFormat;
 import Core.Routes.Route;
@@ -13,7 +13,7 @@ import java.util.Map;
 public class HomeController{
     TestRepository repo;
     public HomeController() {
-        this.repo = new TestRepository(new AbstractPostgresPersist(Connector.connection, TestModel.class));
+        this.repo = new TestRepository(new PostgresPersist(Connector.connection, TestModel.class));
     }
 
     @Route(path = "/", method = "GET")

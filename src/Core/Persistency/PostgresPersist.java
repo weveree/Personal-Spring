@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class AbstractPostgresPersist<I, E extends IEntity<I>> implements IPersist<I, E> {
+public class PostgresPersist<I, E extends IEntity<I>> implements IPersist<I, E> {
     Connection connection;
     Class<E> classEntity;
 
-    public AbstractPostgresPersist(Connection connection, Class<E> classEntity) {
+    public PostgresPersist(Connection connection, Class<E> classEntity) {
         this.connection = connection;
         this.classEntity = classEntity;
     }

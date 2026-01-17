@@ -1,7 +1,7 @@
 import Core.Connector.Connector;
 import Core.Model.Column;
 import TestControllers.TestModel;
-import Core.Persistency.AbstractPostgresPersist;
+import Core.Persistency.PostgresPersist;
 import Core.Persistency.ListPersist;
 import Core.Repository.IRepository;
 import TestControllers.TestRepository;
@@ -36,13 +36,13 @@ public class RepositoryTest {
     @Test
     void PostgresInsertTest() throws SQLException {
         Connection pgsql = Connector.postgres("192.168.1.45",5431,"postgres","wawa","wawa");
-        IRepository<String,TestModel> repo = new TestRepository(new AbstractPostgresPersist<>(pgsql, TestModel.class));
+        IRepository<String,TestModel> repo = new TestRepository(new PostgresPersist<>(pgsql, TestModel.class));
         repo.save(new TestModel("bob"));
     }
     @Test
     void PostgresGetOne() throws SQLException {
         Connection pgsql = Connector.postgres("192.168.1.45",5431,"postgres","wawa","wawa");
-        IRepository<String,TestModel> repo = new TestRepository(new AbstractPostgresPersist<>(pgsql, TestModel.class));
+        IRepository<String,TestModel> repo = new TestRepository(new PostgresPersist<>(pgsql, TestModel.class));
         System.out.println((repo.findById("bob").orElseThrow()).getName());
     }
 
