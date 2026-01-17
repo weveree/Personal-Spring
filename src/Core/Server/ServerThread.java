@@ -6,9 +6,11 @@ import Core.Exception.FilterException;
 import Core.Response.ResponseEntity;
 import Core.Response.ResponseEntityFormat;
 import Core.Security.SecurityManager;
+import Core.Utils.Logger;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,13 @@ public class ServerThread implements Runnable {
     public ServerThread(Socket listener) {
         clientNo = Server.clients;
         this.listener = listener;
+        try {
+            listener.setSoTimeout(30000); // 30 seconds
+            listener.setKeepAlive(false);
+
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -36,7 +45,7 @@ public class ServerThread implements Runnable {
 
         ResponseEntity response = handleRequest(listener.getInputStream());
         sendResponse(response);
-        listener.close();
+        cleanup();
     }
 
     private void sendResponse(ResponseEntity response) throws IOException {
@@ -70,5 +79,18 @@ public class ServerThread implements Runnable {
             return new ResponseEntity(403,ResponseEntityFormat.JSON, Map.of("error",e.getMessage()));
         }
         return ControllerManager.Instance.executeRoute(request.getPath());
+    }
+
+    private void cleanup() {
+        try {
+            if (listener != null && !listener.isClosed()) {
+                listener.close();
+            }
+        } catch (IOException e) {
+            Logger.Log("Error closing socket: " + e.getMessage());
+        } finally {
+            // Decrement client count
+            Server.clients.decrementAndGet();
+        }
     }
 }

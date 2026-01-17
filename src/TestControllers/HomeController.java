@@ -18,7 +18,8 @@ public class HomeController{
 
     @Route(path = "/", method = "GET")
     public ResponseEntity home(Object o) {
-        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",repo.findById("bob").get()));
+//        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",repo.findById("bob").get()));
+        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",repo.findAll().get()));
     }
     @Route(path = "/exit", method = "GET")
     public ResponseEntity exit(Object o) {

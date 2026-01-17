@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +50,24 @@ public class Server {
         LoadProperties();
         socket = new ServerSocket(port);
         Logger.Log("Server is running on : localhost:" + port);
+        handleShutdown();
     }
+
+    private void handleShutdown() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Logger.Log("\n[SIGNAL] Shutdown signal received (Ctrl+C)");
+            pool.shutdownNow();
+            try {
+                socket.close();
+                Connector.connection.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, "shutdown-hook"));
+    }
+
     public void run() throws IOException{
         while (!socket.isClosed()) {
             Socket listener = socket.accept();
