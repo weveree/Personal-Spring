@@ -1,18 +1,16 @@
 package Core.Server;
 
-import Core.Utils.JsonConverter;
-import com.google.gson.Gson;
-
+import java.util.Arrays;
 import java.util.List;
 
 public class Request {
     private String method;
     private String path;
     private String content;
-    private String origins;
+    private List<String> origins;
     private String body;
 
-    public Request(String method, String path, String content, String origins,String body) {
+    public Request(String method, String path, String content, List<String> origins, String body) {
         this.method = method;
         this.path = path;
         this.content = content;
@@ -44,7 +42,7 @@ public class Request {
         this.content = content;
     }
 
-    public String getOrigins() {
+    public List<String> getOrigins() {
         return origins;
     }
 
@@ -52,21 +50,23 @@ public class Request {
         return body;
     }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+    public static String[] extractOrigins(String acceptHeader) {
+        if (acceptHeader == null || acceptHeader.isEmpty()) {
+            return new String[0];
+        }
 
-    public void setOrigins(String origins) {
-        this.origins = origins;
+        return Arrays.stream(acceptHeader.split(","))
+                .map(String::trim)
+                .map(type -> type.split(";")[0].trim())
+                .toArray(String[]::new);
     }
-
     public static Request parse(List<String> line, String body)
     {
 
         String[] headers = line.get(0).split(" ");
         String Accept =  line.stream().filter(obj->obj.contains("Accept:")).findFirst().orElseThrow();
-        String[] origins = Accept.substring(8).split(" ");
+        String[] origins = extractOrigins(Accept.substring(8));
 
-        return new Request(headers[0],headers[1],"",origins[0], body);
+        return new Request(headers[0],headers[1],"", Arrays.stream(origins).toList(), body);
     }
 }

@@ -25,8 +25,17 @@ public class SecurityManager {
     {
         this.filters.add(filter);
     }
-    public boolean isOriginAllowed(String origin){
-        return accepted_origins.contains(origin);
+    public boolean isOriginAllowed(List<String> origin){
+        boolean canAccess = false;
+        for (String ori : origin)
+        {
+            if(accepted_origins.contains(ori))
+            {
+                canAccess=true;
+                break;
+            }
+        }
+        return canAccess;
     }
 
     public Request Execute(Request request) throws FilterException,CORSException {

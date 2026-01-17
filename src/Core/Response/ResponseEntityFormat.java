@@ -1,7 +1,7 @@
 package Core.Response;
 
 public enum ResponseEntityFormat {
-    JSON("application/json"), TEXT("plain/text");
+    JSON("application/json"), TEXT("plain/text"),HTML("text/html; charset=UTF-8");
     String value;
 
     ResponseEntityFormat(String contentType) {
