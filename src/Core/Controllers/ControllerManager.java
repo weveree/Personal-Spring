@@ -37,9 +37,7 @@ public class ControllerManager {
                 Function fun = (request)-> {
                     try {
                         return method.invoke(controller,request);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvocationTargetException e) {
+                    } catch (IllegalAccessException | InvocationTargetException e) {
                         throw new RuntimeException(e);
                     }
                 };
