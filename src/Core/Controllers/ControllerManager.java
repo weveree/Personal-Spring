@@ -32,7 +32,7 @@ public class ControllerManager {
                 {
                     prefix = _class.getAnnotation(Controller.class).value();
                 }
-                String path = prefix + route.path();
+                String path = prefix + route.value();
 
                 Function fun = (request)-> {
                     try {

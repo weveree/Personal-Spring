@@ -11,17 +11,18 @@ import java.util.Map;
 
 @Controller("/api/v1/home")
 public class HomeController{
-    TestRepository repo;
+    HomeService homeService;
+
     public HomeController() {
-        this.repo = new TestRepository(new PostgresPersist(Connector.connection, TestModel.class));
+        homeService=new HomeService();
     }
 
-    @Route(path = "/", method = "GET")
+    @Route("/")
     public ResponseEntity home(Object o) {
-//        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",repo.findById("bob").get()));
-        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",repo.findAll().get()));
+        return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",homeService.getAll()));
     }
-    @Route(path = "/exit", method = "GET")
+
+    @Route("/exit")
     public ResponseEntity exit(Object o) {
         return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message","bye"));
     }
