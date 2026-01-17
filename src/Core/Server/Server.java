@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -30,8 +31,10 @@ public class Server {
         pool = Executors.newCachedThreadPool();
         this.Controllers = ControllerManager.Instance;
     }
-    public static Server createServer() throws IOException {
-        return new Server();
+    public static Server createServer() throws IOException, SQLException {
+        Server server = new Server();
+        server.Init();
+        return server;
     }
 
     public void LoadProperties() throws IOException, SQLException {
@@ -44,12 +47,12 @@ public class Server {
 
         Connector.postgres((String) properties.get("DATABASE.HOST"), Integer.parseInt((String) properties.get("DATABASE.PORT")), (String) properties.get("DATABASE.NAME"), (String) properties.get("DATABASE.USER"), (String) properties.get("DATABASE.PASSWORD"));
     }
-
-    public void run() throws IOException, SQLException {
+    private void Init() throws SQLException, IOException {
         LoadProperties();
         socket = new ServerSocket(port);
         Logger.Log("Server is running on : localhost:" + port);
-
+    }
+    public void run() throws IOException{
         while (!socket.isClosed()) {
             Socket listener = socket.accept();
             clients.incrementAndGet();
