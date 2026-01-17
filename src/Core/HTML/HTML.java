@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HTML {
+    private static final String TEMPLATE_PATH = "src/Web/Templates/";
     public static HTML Instance = new HTML();
 
     public HTML() {
@@ -19,13 +21,7 @@ public class HTML {
     }
 
     Map<String,String> blocks;
-    InputStream Open(String path){
-        try {
-            return Files.newInputStream(Paths.get(path));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
     public static Map<String, String> extractAllBlocks(String template) {
         Map<String, String> blocks = new HashMap<>();
 
@@ -54,16 +50,16 @@ public class HTML {
         }
         return result;
     }
-    String ReadInheritance(String childContent) {
+    String ReadInheritance(String childContent) throws IOException {
         // Chercher {% extends 'filename' %}
         Pattern extendsPattern = Pattern.compile("\\{%\\s*extends\\s+['\"]([^'\"]+)['\"]\\s*%\\}");
         Matcher matcher = extendsPattern.matcher(childContent);
 
         if (matcher.find()) {
-            String parentFile = "src/Templates/" + matcher.group(1);
+            String parentFile = TEMPLATE_PATH + matcher.group(1);
 
             // lire le template parent
-            String parentContent = Read(Open(parentFile));
+            String parentContent = Read(Paths.get(parentFile));
 
             // supp la ligne {% extends %} du contenu enfant
             String childWithoutExtends = matcher.replaceFirst("");
@@ -79,26 +75,13 @@ public class HTML {
 
         return childContent;
     }
-    String Read(InputStream stream){
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder content = new StringBuilder();
-        String line="";
-        while (true)
-        {
-            try {
-                if (!((line = reader.readLine()) != null)) break;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            content.append(line);
-        }
-        return content.toString();
+    String Read(Path path) throws IOException {
+        return Files.readString(path);
     }
 
-    public String Render(String path, Map<String,Object> toInject)
-    {
-        InputStream stream = Open(path);
-        String content = Read(stream);
+    public String Render(String path, Map<String,Object> toInject) throws IOException {
+        path=TEMPLATE_PATH+path;
+        String content = Read(Paths.get(path));
         for (Map.Entry<String,Object> k : toInject.entrySet())
         {
             content = content.replace((CharSequence) ("{{"+k.getKey()+"}}"), (CharSequence) k.getValue());

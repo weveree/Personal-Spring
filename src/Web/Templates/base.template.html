@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+    <link href="../Static/css/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<header id="bigHeader">
+    <h1>This is the main header</h1>
+</header>
+<main>
+    {% block 'body' %}
+    {% endblock 'body' %}
+</main>
+
+<footer>
+    <p>My footer heyyy</p>
+    {% block 'footer' %}
+    {% endblock 'footer' %}
+</footer>
+
+</body>
+</html>

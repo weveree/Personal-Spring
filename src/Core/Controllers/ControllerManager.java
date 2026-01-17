@@ -22,7 +22,6 @@ public class ControllerManager {
     public void RegisterController(Object controller) {
         Class<?> _class = controller.getClass();
 
-
         for(Method method : _class.getDeclaredMethods())
         {
             if(method.isAnnotationPresent(Route.class))
@@ -42,7 +41,10 @@ public class ControllerManager {
                         throw new RuntimeException(e);
                     }
                 };
-                routes.put(route.method(),Map.of(path,fun));
+                if (!routes.containsKey(route.method())) {
+                    routes.put(route.method(), new HashMap<>());
+                }
+                routes.get(route.method()).put(path, fun);
                 System.out.println("Path "+path+" added");
             }
         }

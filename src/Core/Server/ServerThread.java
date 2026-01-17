@@ -11,6 +11,9 @@ import Core.Utils.Logger;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +60,31 @@ public class ServerThread implements Runnable {
         writer.flush();
         writer.close();
     }
+    private ResponseEntity serveStaticFile(String path) {
+        try {
+            // "/static/css/style.css" -> "src/static/css/style.css"
+            String filePath = path.replace("/api/v1","").replace("/Static/", "src/Web/Static/");
+            Path file = Paths.get(filePath);
 
+            if (!Files.exists(file)) {
+                return new ResponseEntity(404, ResponseEntityFormat.TEXT, "File not found");
+            }
+
+            String content = Files.readString(file);
+            String contentType = getContentType(path);
+
+            return new ResponseEntity(200, ResponseEntityFormat.fromContentType(contentType), content);
+        } catch (IOException e) {
+            return new ResponseEntity(500, ResponseEntityFormat.TEXT, "Error reading file");
+        }
+    }
+    private String getContentType(String path) {
+        if (path.endsWith(".css")) return "text/css";
+        if (path.endsWith(".js")) return "application/javascript";
+        if (path.endsWith(".png")) return "image/png";
+        if (path.endsWith(".jpg")) return "image/jpeg";
+        return "text/plain";
+    }
     private ResponseEntity handleRequest(InputStream stream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         String line = reader.readLine();
@@ -89,6 +116,12 @@ public class ServerThread implements Runnable {
         } catch (FilterException | CORSException e) {
             return new ResponseEntity(403, ResponseEntityFormat.JSON, Map.of("error", e.getMessage()));
         }
+
+        // INTERCEPT STATIC FILES
+        if (request.getPath().contains("/Static/")) {
+            return serveStaticFile(request.getPath());
+        }
+
         return ControllerManager.Instance.executeRoute(request.getPath(), request.getMethod(),request);
     }
 

@@ -34,7 +34,7 @@ public class HomeController{
     @Route("/html")
     public ResponseEntity htmlTest(Object o) throws IOException {
         return new ResponseEntity(200, ResponseEntityFormat.HTML,
-                HTML.Instance.Render("src/Templates/testTemplate.template.html",Map.of("title","Salut comment vas-tu ?  ")));
+                HTML.Instance.Render("testTemplate.template.html",Map.of("title","Hey this is from a template  ")));
     }
     @Route("/exit")
     public ResponseEntity exit(Object o) {
