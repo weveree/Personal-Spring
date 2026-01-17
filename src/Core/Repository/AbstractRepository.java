@@ -21,7 +21,7 @@ public abstract class AbstractRepository<I,E extends IEntity<I>> implements IRep
 
 
     public Optional<E> findById(I id){
-        return table.stream().filter(entity-> entity.getName() == id).findFirst();
+        return table.getOne(id);
     }
     @Override
     public Optional<List<E>> findAll(){

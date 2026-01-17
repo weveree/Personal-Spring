@@ -12,4 +12,5 @@ public interface IPersist<I,E extends IEntity> {
     Stream<E> stream();
 
     Optional<List<E>> getAll();
+    Optional<E> getOne(I id);
 }

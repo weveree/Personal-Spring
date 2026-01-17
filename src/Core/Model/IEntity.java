@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface IEntity<T> {
     T getName();
+
+    Object getId();
 }

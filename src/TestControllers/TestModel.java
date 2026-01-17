@@ -21,4 +21,9 @@ public class TestModel extends AbstractEntity<String> {
         return name;
     }
 
+    @Override
+    public Object getId() {
+        return this.name;
+    }
+
 }

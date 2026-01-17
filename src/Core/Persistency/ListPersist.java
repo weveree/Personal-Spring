@@ -23,4 +23,10 @@ public class ListPersist<I,E extends IEntity> implements IPersist<I,E>{
     public Optional<List<E>> getAll() {
         return Optional.ofNullable(models);
     }
+    @Override
+    public Optional<E> getOne(I id) {
+        return this.models.stream()
+                .filter(obj -> obj.getId().equals(id))
+                .findFirst();
+    }
 }

@@ -1,11 +1,13 @@
 package Core.Query;
 
-import java.util.function.Predicate;
+import java.util.List;
 
 public class QueryBuilder {
     String query ="";
     String table;
     String mode;
+    private String beforeValues ="";
+    private String _values ="";
 
     public QueryBuilder select()
     {
@@ -15,6 +17,30 @@ public class QueryBuilder {
     public QueryBuilder update()
     {
         this.mode = "udpate ";
+        this.beforeValues="set ";
+        return this;
+    }
+    public QueryBuilder insert(List<String> values)
+    {
+        this.mode = "insert into ";
+        String build ="(";
+        for (int i = 0; i < values.size(); i++) {
+                build+=values.get(i)+((i+1 == values.size()) ? "":",");
+        }
+        this.beforeValues +=build+") VALUES ";
+        return this;
+    }
+    public QueryBuilder values(List<String> values)
+    {
+        String build ="";
+        if(mode.startsWith("insert"))
+            build+="(";
+        for (int i = 0; i < values.size(); i++) {
+            build+=values.get(i)+((i+1 == values.size()) ? "":",");
+        }
+        if(mode.startsWith("insert"))
+            build+=")";
+        this._values +=build;
         return this;
     }
     public QueryBuilder delete()
@@ -58,6 +84,6 @@ public class QueryBuilder {
             throw new Exception("Request not valid");
         if(mode.isEmpty()||table.isEmpty())
             throw new Exception("Request not valid");
-        return mode+table+query;
+        return mode+table+beforeValues+ _values +query;
     }
 }

@@ -37,7 +37,13 @@ public class RepositoryTest {
     void PostgresInsertTest() throws SQLException {
         Connection pgsql = Connector.postgres("192.168.1.45",5431,"postgres","wawa","wawa");
         IRepository<String,TestModel> repo = new TestRepository(new AbstractPostgresPersist<>(pgsql, TestModel.class));
-        System.out.println(repo.findAll().get().get(0).getName());
+        repo.save(new TestModel("bob"));
+    }
+    @Test
+    void PostgresGetOne() throws SQLException {
+        Connection pgsql = Connector.postgres("192.168.1.45",5431,"postgres","wawa","wawa");
+        IRepository<String,TestModel> repo = new TestRepository(new AbstractPostgresPersist<>(pgsql, TestModel.class));
+        System.out.println((repo.findById("bob").orElseThrow()).getName());
     }
 
     @Test
