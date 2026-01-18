@@ -63,7 +63,7 @@ public class ServerThread implements Runnable {
     private ResponseEntity serveStaticFile(String path) {
         try {
             // "/static/css/style.css" -> "src/static/css/style.css"
-            String filePath = path.replace("/api/v1","").replace("/Static/", "src/Web/Static/");
+            String filePath = path.replace("/api/v1","").replace("/Static/", "src/main/java/Web/Static/");
             Path file = Paths.get(filePath);
 
             if (!Files.exists(file)) {

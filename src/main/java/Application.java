@@ -1,11 +1,8 @@
-import Core.Connector.Connector;
-import Core.Controllers.ControllerManager;
 import Core.Controllers.StaticFileController;
 import TestControllers.HomeController;
 import Core.Server.Server;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Application {

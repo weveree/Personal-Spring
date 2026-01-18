@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HTML {
-    private static final String TEMPLATE_PATH = "src/Web/Templates/";
+    public static final String TEMPLATE_PATH = "src/main/java/Web/Templates/";
     public static HTML Instance = new HTML();
 
     public HTML() {
