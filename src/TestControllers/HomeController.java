@@ -31,10 +31,13 @@ public class HomeController{
         System.out.println(o.getBody());
         return new ResponseEntity(200, ResponseEntityFormat.JSON, Map.of("message",homeService.getAll()));
     }
+
     @Route("/html")
     public ResponseEntity htmlTest(Object o) throws IOException {
+        TestModel model = homeService.getOne("John");
         return new ResponseEntity(200, ResponseEntityFormat.HTML,
-                HTML.Instance.Render("testTemplate.template.html",Map.of("title","Hey this is from a template  ")));
+                HTML.Instance.Render("testTemplate.template.html",
+                        Map.of("title",model.getName())));
     }
     @Route("/exit")
     public ResponseEntity exit(Object o) {

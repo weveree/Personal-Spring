@@ -100,7 +100,6 @@ public class ServerThread implements Runnable {
         }
         String body = null;
         int length = 0;
-        int index =0;
         if (request_builder.stream().filter(obj->obj.contains("Content-Length")).findAny().isPresent())
             if (request_builder.get(8).startsWith("Content-Length"))
                 length = Integer.parseInt(request_builder.get(8).substring(16));

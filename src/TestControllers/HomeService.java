@@ -14,4 +14,8 @@ public class HomeService {
     public List<TestModel> getAll() {
         return repo.findAll().get();
     }
+
+    public TestModel getOne(String name) {
+        return repo.findById(name).orElseThrow();
+    }
 }
