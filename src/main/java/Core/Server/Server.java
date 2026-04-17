@@ -1,20 +1,20 @@
 package Core.Server;
 
-import Core.Connector.Connector;
+import Core.Connector.ConnectorFactory;
 import Core.Controllers.ControllerManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import Core.Server.ServerInitSteps.DBConnectionInitStepImpl;
+import Core.Server.ServerInitSteps.IStepInit;
 import Core.Utils.Logger;
 
 public class Server {
@@ -23,10 +23,10 @@ public class Server {
     ExecutorService pool;
     public ControllerManager Controllers;
     int port;
-    Properties properties;
+    List<IStepInit> initSteps=new ArrayList<IStepInit>();
 
-    private Server() throws IOException {
-
+    private Server(){
+        initSteps.add(new DBConnectionInitStepImpl());
         pool = Executors.newCachedThreadPool();
         this.Controllers = ControllerManager.Instance;
     }
@@ -36,18 +36,17 @@ public class Server {
         return server;
     }
 
-    public void LoadProperties() throws IOException, SQLException {
-        properties = new Properties();
-        Path path_to_env = Paths.get(".env");
-        properties.load(Files.newInputStream(path_to_env));
-        Logger.Log("Configurations loaded.");
 
-        port = Integer.parseInt((String) properties.get("SERVER.PORT"));
-
-        Connector.postgres((String) properties.get("DATABASE.HOST"), Integer.parseInt((String) properties.get("DATABASE.PORT")), (String) properties.get("DATABASE.NAME"), (String) properties.get("DATABASE.USER"), (String) properties.get("DATABASE.PASSWORD"));
-    }
-    private void Init() throws SQLException, IOException {
-        LoadProperties();
+    private void Init() throws IOException {
+        for(IStepInit step: initSteps)
+        {
+            if(step instanceof DBConnectionInitStepImpl)
+            {
+                port = ((DBConnectionInitStepImpl) step).run();
+            }
+            else
+                step.run();
+        }
         socket = new ServerSocket(port);
         Logger.Log("Server is running on : localhost:" + port);
         handleShutdown();
@@ -59,7 +58,7 @@ public class Server {
             pool.shutdownNow();
             try {
                 socket.close();
-                Connector.connection.close();
+                ConnectorFactory.connection.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (SQLException e) {

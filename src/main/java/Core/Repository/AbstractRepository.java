@@ -15,10 +15,8 @@ public abstract class AbstractRepository<I,E extends IEntity<I>> implements IRep
 
     @Override
     public void save(E entity) {
-//        E toSave = findById(entity.getId()).or();
         table.add(entity);
     }
-
 
     public Optional<E> findById(I id){
         return table.getOne(id);

@@ -1,6 +1,6 @@
 package TestControllers;
 
-import Core.Connector.Connector;
+import Core.Connector.ConnectorFactory;
 import Core.Persistency.PostgresPersist;
 
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public class HomeService {
     TestRepository repo;
     public HomeService() {
-        this.repo = new TestRepository(new PostgresPersist(Connector.connection, TestModel.class));
+        this.repo = new TestRepository(new PostgresPersist(ConnectorFactory.connection, TestModel.class));
     }
 
     public List<TestModel> getAll() {

@@ -2,12 +2,15 @@ package Core.Controllers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import Core.Response.ResponseEntity;
+import Core.Response.ResponseEntityFormat;
 import Core.Routes.Route;
 import Core.Server.Request;
 
@@ -38,7 +41,12 @@ public class ControllerManager {
                     try {
                         return method.invoke(controller,request);
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                        String res = "";
+                        for( StackTraceElement element: e.getStackTrace())
+                        {
+                            res+= element.toString()+"\n";
+                        }
+                        return (Object) new ResponseEntity(400, ResponseEntityFormat.TEXT,res);
                     }
                 };
                 if (!routes.containsKey(route.method())) {
